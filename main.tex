@@ -33,8 +33,15 @@
 
 \graphicspath{{Pictures/}} % Specifies the directory where pictures are stored
 
-\usepackage[backend=bibtex]{biblatex}
-\bibliography{Bibliography.bib}
+\usepackage{lineno} 
+\linenumbers % TODO: Line numbers in draft mode. Disable before submitting
+
+\usepackage[sfdefault]{atkinson} % atkinson hyperlegible font
+
+\usepackage[backend=bibtex]{biblatex} % bibliography in the end
+\bibliography{bibliography}
+
+\usepackage{nameref}
 
 \title{\ttitle} % Defines the thesis title - don't touch this
 
@@ -61,17 +68,17 @@
 \maketitle
 \Declaration
 \Certificate
-\Quotation{Insert Random Quote here. Publish like a boss.}{Your Name}
+
+% \Quotation{Insert Random Quote here. Publish like a boss.}{Your Name}
 
 \begin{abstract}
-The Thesis Abstract is written here (and usually kept to just this page).
-The page is kept centered vertically so can expand into the blank space above
-the title too\ldots
+Even after decades of work to make monolithic kernels more secure, serious vulnerabilities in them are still reported every year. Because the entire monolithic kernel is in one address space, an attacker is just one vulnerability away from owning the entire machine. We argue that it is time to decompose monolithic kernels like Linux into smaller parts that run in isolated compartments and communicate using secure interfaces. We think this is timely due to recent trends in hardware that make it easier and efficient to isolate kernel components.
+
+In this Thesis, I discuss Atmosphere, our approach to microkernelization and fault isolation in Operating Systems. Specifically, I will focus on the network stack we built for Atmosphere. We argue that the network stack is a source for bugs and that isolation is the way forward to minimize the impact of these bugs. 
 \end{abstract}
 
 \begin{acknowledgements}
-The acknowledgements and the people to thank go here, don't forget to include
-your project advisor\ldots
+Thanks to Anton for calling me to Utah and giving me this opportunity. Thanks to Prof. Hari Babu for teaching me NetProg. Thanks to Xiangdong for dragging me to the gym everyday and all of his compilers. Thanks to Zhaofeng for all the Nix shells and gatekeeping all our code. Without all of them, this Thesis wouldn't have been possible.
 \end{acknowledgements}
 
 %-------------------------------------------------------------------------------
@@ -87,53 +94,53 @@ your project advisor\ldots
 
 % Set the left side page header to "List of Figures"
 \lhead{\emph{List of Figures}}
-\listoffigures % Write out the List of Figures
+% \listoffigures % Write out the List of Figures
 
  % Set the left side page header to "List of Tables"
 \lhead{\emph{List of Tables}}
-\listoftables % Write out the List of Tables
+% \listoftables % Write out the List of Tables
 
-%-------------------------------------------------------------------------------
-%	ABBREVIATIONS
-%-------------------------------------------------------------------------------
+%%-------------------------------------------------------------------------------
+%%	ABBREVIATIONS
+%%-------------------------------------------------------------------------------
 
-\clearpage % Start a new page
+%\clearpage % Start a new page
 
- % Set the line spacing to 1.5, this makes the following tables easier to read
-\setstretch{1.5}
+% % Set the line spacing to 1.5, this makes the following tables easier to read
+%\setstretch{1.5}
 
-\lhead{\emph{Abbreviations}} % Set the left side page header to "Abbreviations"
-\listofsymbols{ll} % Include a list of Abbreviations (a table of two columns)
-{
-\textbf{LAH} & \textbf{L}ist \textbf{A}bbreviations \textbf{H}ere \\
-%\textbf{Acronym} & \textbf{W}hat (it) \textbf{S}tands \textbf{F}or \\
-}
+%\lhead{\emph{Abbreviations}} % Set the left side page header to "Abbreviations"
+%\listofsymbols{ll} % Include a list of Abbreviations (a table of two columns)
+%{
+%\textbf{LAH} & \textbf{L}ist \textbf{A}bbreviations \textbf{H}ere \\
+%%\textbf{Acronym} & \textbf{W}hat (it) \textbf{S}tands \textbf{F}or \\
+%}
 
 %-------------------------------------------------------------------------------
 %	PHYSICAL CONSTANTS/OTHER DEFINITIONS
 %-------------------------------------------------------------------------------
 
-\clearpage % Start a new page
+% \clearpage % Start a new page
 
-% Set the left side page header to "Physical Constants"
-\lhead{\emph{Physical Constants}}
+% % Set the left side page header to "Physical Constants"
+% \lhead{\emph{Physical Constants}}
 
- % Include a list of Physical Constants (a four column table)
-\listofconstants{lrcl}
-{
-Speed of Light & $c$ & $=$ & $2.997\ 924\ 58\times10^{8}\ \mbox{ms}^{-\mbox{s}}$ (exact)\\
-% Constant Name & Symbol & = & Constant Value (with units) \\
-}
+%  % Include a list of Physical Constants (a four column table)
+% \listofconstants{lrcl}
+% {
+% Speed of Light & $c$ & $=$ & $2.997\ 924\ 58\times10^{8}\ \mbox{ms}^{-\mbox{s}}$ (exact)\\
+% % Constant Name & Symbol & = & Constant Value (with units) \\
+% }
 
-%-------------------------------------------------------------------------------
-%	SYMBOLS
-%-------------------------------------------------------------------------------
+%%-------------------------------------------------------------------------------
+%%	SYMBOLS
+%%-------------------------------------------------------------------------------
 
-\clearpage % Start a new page
+%\clearpage % Start a new page
 
-\lhead{\emph{Glossary}} % Set the left side page header to "Symbols"
+%\lhead{\emph{Glossary}} % Set the left side page header to "Symbols"
 
-\listofnomenclature % List the nomenclature. (We use the glossaries package)
+%\listofnomenclature % List the nomenclature. (We use the glossaries package)
 
 %-------------------------------------------------------------------------------
 %	DEDICATION
@@ -144,7 +151,7 @@ Speed of Light & $c$ & $=$ & $2.997\ 924\ 58\times10^{8}\ \mbox{ms}^{-\mbox{s}}$
 \pagestyle{empty} % Page style needs to be empty for this page
 
 % Dedication text
-\Dedicatory{Dedicate this to someone, anyone.}
+\Dedicatory{Dedicated to Kenkin, the emotional support capybara.}
 
 \addtocontents{toc}{\vspace{2em}} % Add a gap in the Contents, for aesthetics
 
@@ -159,11 +166,11 @@ Speed of Light & $c$ & $=$ & $2.997\ 924\ 58\times10^{8}\ \mbox{ms}^{-\mbox{s}}$
 % Include the chapters of the thesis as separate files from the Chapters folder
 % Uncomment the lines as you write the chapters
 
-\input{Chapters/Chapter1}
-%\input{Chapters/Chapter2}
-%\input{Chapters/Chapter3}
-%\input{Chapters/Chapter4}
-%\input{Chapters/Chapter5}
+\input{chapters/chapter1}
+\input{chapters/chapter2}
+\input{chapters/chapter3}
+\input{chapters/chapter4}
+\input{chapters/chapter5}
 %\input{Chapters/Chapter6}
 %\input{Chapters/Chapter7}
 
@@ -179,7 +186,7 @@ Speed of Light & $c$ & $=$ & $2.997\ 924\ 58\times10^{8}\ \mbox{ms}^{-\mbox{s}}$
 % folder
 % Uncomment the lines as you write the Appendices
 
-\input{Appendices/AppendixA}
+% \input{Appendices/AppendixA}
 %\input{Appendices/AppendixB}
 %\input{Appendices/AppendixC}
 

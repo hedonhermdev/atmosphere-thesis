@@ -201,6 +201,16 @@ supervision.\\[2.5cm]
 }
 %-------------------------------------------------------------------------------
 
+
+%-------------------------------------------------------------------------------
+% COMMENTS
+%-------------------------------------------------------------------------------
+\newcommand{\mynote}[2]{
+    \fbox{\bfseries\scriptsize#1}
+    {\emph{#2}}
+}
+\newcommand{\tirth}[1]{\mynote{Tirth}{#1}}
+
 \raggedbottom
 \setlength{\topskip}{1\topskip \@plus 5\p@}
 \doublehyphendemerits=10000       % No consecutive line hyphens.
@@ -274,9 +284,9 @@ supervision.\\[2.5cm]
    colorlinks,linkcolor={blue},citecolor={red},urlcolor={black},
    pdfstartview={FitV},unicode,breaklinks=true]{hyperref}
 
-\usepackage[toc]{glossaries}
-\glossarystyle{long}
-\makeglossaries
+% \usepackage[toc]{glossaries}
+% \glossarystyle{long}
+% \makeglossaries
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
 \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 \pdfstringdefDisableCommands{
@@ -355,7 +365,7 @@ supervision.\\[2.5cm]
             \cosupname\\[1cm] % The co-supervisor's name
         \end{center}
 
-        \includegraphics{Figures/bits-logo.pdf} % University/department logo
+        \includegraphics{figures/bits-logo.pdf} % University/department logo
        \\[1cm]
         \UNIVNAME, \CAMPUSNAME\\
         {\large \today}\\[4cm] % Date
@@ -510,7 +520,7 @@ supervision.\\[2.5cm]
 }
 \newcommand\listnomenclature{Nomenclature}
 \newcommand\listofnomenclature[0]{
-\printglossaries
+% \printglossaries
     \cleardoublepage
 }
 \renewcommand\backmatter{
