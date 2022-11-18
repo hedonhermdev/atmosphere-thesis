@@ -6,10 +6,18 @@
 
 \lhead{Chapter 2. \emph{Backround and Related Work}} 
 
+\tirth{some intro here? idk}
+
 \section{Theseus}
+Theseus\cite{theseus} is a microkernel based operating system written in Rust. Rust's safety guarantees enable Theseus to run all software written in Rust, including userspace applications, to run in a Single Address Space system with a Single Privilege level. Thus, eliminating the need for virtual memory management and protection rings. Theseus introduces the idea of cells that are described as a software-defined unit of modularity that serves as the core building block of the OS. A cell can be modeled as a crate in Rust. On booting, only the microkernel, ie, the \lstinline{nano_core} is loaded which bootstraps the system. All other cells are dynamically loaded on demand. 
+Theseus piggybacks on Rust's safety guarantees to enable reliable IPC between cells. For example, memory mappings are a 1-1 mapping to a physical frame. They can only be shared behind a read-only \lstinline{&MappedPages} reference eliminating the double-free and the use-after-free problem. 
+
+The most important contribution by Theseus is the idea of eliminating (or minimizing) shared state between components. All OS services can be modelled as servers and applications requesting these services are modelled as clients. Theseus eliminates state-spill\cite{state-spill} across cells by eliminating all state from the servers. Everything that is needed to service a client's request is stored in the client itself and thus the servers can be completely stateless. This allows a server cell to be replaced by a new cell without any state loss. This, however, is not always possible. In case a state cannot be eliminated, as in the case of descriptor tables, the state is stored in a \lstinline{state_db}. The \lstinline{state_db} is a key-value database that stores states with a static lifetime that the server can request a (weak) reference to. In case a server needs to be restarted, its state can be recovered from the \lstinline{statedb}. The statelessness of cells also allows for live updates. A server can be replaced, ie, a patch can be applied to a component without having to restart the entire operating system. Applying a patch is as simple as swapping a cell with a new cell.
+
+\tirth{Maybe add limitations and performance evaluations of Theseus here?}
 
 \section{Singularity OS}
 
 \section{sel4}
 
-\section{}
+\section{RedLeaf}

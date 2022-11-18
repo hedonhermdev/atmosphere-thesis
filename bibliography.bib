@@ -1,27 +1,28 @@
-@misc{ Nobody06,
-       author = "Nobody Jr",
-       title = "My Article",
-       year = "2006"
+@inproceedings {theseus,
+author = {Kevin Boos and Namitha Liyanage and Ramla Ijaz and Lin Zhong},
+title = {Theseus: an Experiment in Operating System Structure and State Management},
+booktitle = {14th USENIX Symposium on Operating Systems Design and Implementation (OSDI 20)},
+year = {2020},
+isbn = {978-1-939133-19-9},
+pages = {1--19},
+url = {https://www.usenix.org/conference/osdi20/presentation/boos},
+publisher = {USENIX Association},
+month = nov,
 }
 
-@inproceedings{kendall2007practical,
-  title={Practical malware analysis},
-  author={Kendall, Kris and McMillan, Chad},
-  booktitle={Black Hat Conference, USA},
-  pages={10},
-  year={2007}
-}
-
-@article{cmu-malware,
-  title={Malware Capability Development Patterns Respond To Defenses: Two Case Studies},
-  author={O’Meara, Kyle and Shick, Deana and Spring, Jonathan and Stoner, Edward},
-  year={2016}
-}
-
-@online{cyber-killchain,
-	title = {Cyber Kill Chain},
-	url = {http://cyber.lockheedmartin.com/solutions/cyber-kill-chain
-},
-	titleaddon = {{Lockheed Martin}},
-	urldate = {2016-03-20}
+@inproceedings{state-spill,
+author = {Boos, Kevin and Vecchio, Emilio Del and Zhong, Lin},
+title = {A Characterization of State Spill in Modern Operating Systems},
+year = {2017},
+isbn = {9781450349383},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3064176.3064205},
+doi = {10.1145/3064176.3064205},
+abstract = {Understanding and managing the propagation of states in operating systems has become an intractable problem due to their sheer size and complexity. Despite modularization efforts, it remains a significant barrier to many contemporary computing goals: process migration, fault isolation and tolerance, live update, software virtualization, and more. Though many previous OS research endeavors have achieved these goals through ad-hoc, tedious methods, we argue that they have missed the underlying reason why these goals are so challenging: state spill.State spill occurs when a software entity's state undergoes lasting changes as a result of a transaction from another entity. In order to increase awareness of state spill and its harmful effects, we conduct a thorough study of modern OSes and contribute a classification of design patterns that cause state spill. We present StateSpy, an automated tool that leverages cooperative static and runtime analysis to detect state spill in real software entities. Guided by StateSpy, we demonstrate the presence of state spill in 94\% of Android system services. Finally, we analyze the harmful impacts of state spill and suggest alternative designs and strategies to mitigate them.},
+booktitle = {Proceedings of the Twelfth European Conference on Computer Systems},
+pages = {389–404},
+numpages = {16},
+location = {Belgrade, Serbia},
+series = {EuroSys '17}
 }
