@@ -3,3 +3,20 @@
 \label{Chapter4} % For referencing the chapter elsewhere, use \ref{Chapter1} 
 
 \lhead{Chapter 4. The Network Stack} % This is for the header on each page - perhaps a shortened title
+
+In this chapter, we take a look at how we implemented the UDP stack for Atmosphere. Since Atmosphere is not ready yet, we build a standalone network stack that runs in the userspace and evaluate its performance. We use a custom userspace network driver (Ixy) to process raw ethernet frames sent to and from the network stack. This driver is shared across applications just as it would be in the real Atmosphere.
+
+\section{Ixy}
+
+Ixy is a network driver implemented in the userspace for Intel's Ixgbe family of network cards that shows how network cards work at the driver level. It is implemented in a fashion similar to DPDK and Snabb. We use an implementation of Ixy in Rust (ixy.rs) \cite{ixy-rs} and modify it to fit into our isolation model. Specifically, how the mempools are allocated. Instead of letting the driver allocate the mempools for DMA, the process owning the network stack allocates (and owns) the mempool for both receiving and transmitting packets. The mempools are allocated on the "exchange heap" and can be passed to the driver using RRefs. Since Ixbge cards support multiple queues, each network can be associated with a ``pair" of RX/TX queues and is the only one that can send/receive packets to/from it. We note that this modification does affect the performance of the driver a little as demonstrated in \ref{Figure 1.}.
+
+\section{Network Manager}
+
+The network manager is a shared component that manages and allocates ports to the applications. The network manager keeps track of open ports and associates network stacks with a port. It also holds a queue of empty buffers for each allocated stack. When a stack is not actively receiving packets from the NIC, it can buffer packets in a separate queue to relieve the NIC from buffering packets. This is done with the help of packet flipping. 
+
+\section{Packet Processing}
+
+\subsection*{Batching}
+
+\subsection{Packet Flipping}
+When a stack receives a batch of packets by calling \lstinline{rx_batch}, it can go through the batch and read the protocol and destination port and match them against its own protocol and port. If the tuple doesn't match, it can pass the buffer to the packet manager which will ``flip" the packet buffer with a pre-allocated empty buffer from an appropriate queue. This way, stacks can "help" other stacks receive packets from the same NIC.
