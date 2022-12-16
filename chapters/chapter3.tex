@@ -1,9 +1,33 @@
-\chapter{Atmosphere Design}
+\chapter{Isolation Mechanisms}
 
 \label{Chapter3}
 
-\lhead{Chapter 3. \emph{Atmosphere Design}} 
+\lhead{Chapter 3. \emph{Isolation Mechanisms}} 
 
-\section{Safe IPC}
+\tirth{ Some intro here }
 
-\tirth{Describe RedLeaf RRef interface.}
+\section{Memory Protection Keys}
+
+Recently, Intel introduced Memory Protection Keys for isolation support in the hardware. The 4 unused bits in the page table are used to assign a protection key to a page.  The PKRU register contains a 32-bit key representing the read/write permissions for 16 possible keys. The PKRU register can be accessed using user-mode \lstinline{WRPKRU} (for writing) and \lstinline{RDPKRU} instructions. For process sandboxing, the trusted computing base (TCB) can assign permissions to memory by writing the protection key to the PKRU register before passing it to the untrusted domain. To ensure an untrusted domain cannot use these instructions, we can use binary rewriting to remove all occurences of \lstinline{WRPKRU} and \lstinline{RDPKRU}.
+
+Process isolation with MPK incurs a very low overhead. Crossing domains takes domains takes only 20-26 cycles \cite{ipc-62, ipc-33} and passing a buffer to an untrusted domain is simply manipulating bits in a global table that holds PKRU values for every domain. However, the number of domains that can co-exist is limited by the number of possible PKeys supported by the hardware.
+
+\section{Native Client}
+Introduced in 2009 by Google (now deprecated in favour of WebAssembly), Native Client (NaCl) added support for sandboxing untrusted native x86 code in browsers. NaCl limits the address space of a domain to a 4GiB segment. The two main invariants enforced by NaCl are:  no loads or stores can access data outside their 4GiB segment, and all jumps need to land to a valid instruction boundary inside the domain. The \lstinline{R15} register is reserved as \lstinline{RZP} which always points to the start of the domain. NaCl introduces pseudo-instructions that are finally expanded into x86 instructions that maintain the above invariants. 
+All addresses are modified this way: the first 32 bits of the register are masked and then the register is added with R15. This way, every address lies in its respective segment. In addition to this, for jump instructions, the last 5 bits of the address register are masked so that the jump destination is always 32 bytes aligned. This is done to make sure that the masking instructions are not bypassed by jumping to an invalid target. 
+
+The NaCl runtime incurs an overhead of only 10-15\%. Since, Google NaCl only supports a single untrusted domain, we adapt Google NaCl to support multiple domains. Data can be passed between domains by copying the buffer between segments. 
+
+To evaluate how NaCl fares in a multi-domain setup, we implement a version that supports multiple domains. To compare the performance on ARM CPUs, we implement a similar setup in our evaluations.
+
+\section{LXFI}
+LXFI is a capability-based Software Fault Isolation mechanism that allows multiple untrusted domains to co-exist. A capability can be of three kinds: \lstinline{READ}, \lstinline{WRITE} and \lstinline{CALL} denoting read, write and execute permissions respectively. Capabilities are stored in a hash-table which binds a memory region with the domain that owns it. LXFI uses compile-time rewriting to enforce a capability check before every load/store operation and every call or indirect jump to ensure that the domain has the capability to access the data or call the function. 
+
+\section{ARM NaCl}
+
+\section{ARM Pointer Authentication}
+
+\section{ARM Memory Tagging Extensions}
+
+\section{Evaluating Isolation Mechanisms}
+To evaluate the aforementioned isolation mechanisms, 
