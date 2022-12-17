@@ -6,9 +6,16 @@
 
 In this chapter, we take a look at how we implemented the UDP stack for Atmosphere. Since Atmosphere is not ready yet, we build a standalone network stack that runs in the userspace and evaluate its performance. We use a custom userspace network driver (Ixy) to process raw ethernet frames sent to and from the network stack. This driver is shared across applications just as it would be in the real Atmosphere.
 
-\section{Ixy}
+\section{Driver for the Network Card}
 
-Ixy is a network driver implemented in the userspace for Intel's Ixgbe family of network cards that shows how network cards work at the driver level. It is implemented in a fashion similar to DPDK and Snabb. We use an implementation of Ixy in Rust (ixy.rs) \cite{ixy-rs} and modify it to fit into our isolation model. Specifically, how the mempools are allocated. Instead of letting the driver allocate the mempools for DMA, the process owning the network stack allocates (and owns) the mempool for both receiving and transmitting packets. The mempools are allocated on the "exchange heap" and can be passed to the driver using RRefs. Since Ixbge cards support multiple queues, each network can be associated with a ``pair" of RX/TX queues and is the only one that can send/receive packets to/from it. We note that this modification does affect the performance of the driver a little as demonstrated in \ref{Figure 1.}.
+Ixy is a network driver implemented in the userspace for Intel's Ixgbe family of network cards that shows how network cards work at the driver level. It is implemented in a fashion similar to DPDK and Snabb. We modify Ixy to fit the design of our network stack. Two main limitations of Ixy (as per our design) are: (1) it handles allocations in the driver and (2) received packets cannot be reused as transmit packets. (2) is important as for a lot of applications (e.g. MICA), we want to be able to flip headers in a received packet and send it back to the client. 
+
+The major modifications we make to Ixy are:
+\begin{itemize}
+\item{Change the way packets are allocated. We get rid of the huge-pages backed Mempool and allow packets to be discretely allocated. DMA mapping is done for every packet. While this is wasteful in terms of memory (each packet takes a page), there is no discernible change in performance in processing packets. This also enables the NIC to interleave packets from different applications in the same queue without crossing any isolation boundaries. }
+\item{Receive queues do not allocate packets themselves. Instead, the application supplies a batch of allocated buffers which is used to read packets from the NIC. This relieves the NIC from having to do any allocations. }
+
+On testing with an Ixgbe NIC with a line rate of 10GB/s, we see no drop in performance after our 
 
 \section{Network Manager}
 
