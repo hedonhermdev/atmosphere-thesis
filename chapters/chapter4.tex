@@ -4,26 +4,71 @@
 
 \lhead{Chapter 4. The Network Stack} % This is for the header on each page - perhaps a shortened title
 
-In this chapter, we take a look at how we implemented the UDP stack for Atmosphere. Since Atmosphere is not ready yet, we build a standalone network stack that runs in the userspace and evaluate its performance. We use a custom userspace network driver (Ixy) to process raw ethernet frames sent to and from the network stack. This driver is shared across applications just as it would be in the real Atmosphere.
+In this chapter, we take a look at how we implemented the UDP stack for Atmosphere. Since Atmosphere is not ready yet, we build a standalone network stack that runs in the userspace and evaluate its performance. We use a custom userspace network driver (based on Ixy) to process raw ethernet frames sent to and from the network stack. This driver is shared across applications just as it would be in the real Atmosphere.
 
 \section{Driver for the Network Card}
 
-Ixy is a network driver implemented in the userspace for Intel's Ixgbe family of network cards that shows how network cards work at the driver level. It is implemented in a fashion similar to DPDK and Snabb. We modify Ixy to fit the design of our network stack. Two main limitations of Ixy (as per our design) are: (1) it handles allocations in the driver and (2) received packets cannot be reused as transmit packets. (2) is important as for a lot of applications (e.g. MICA), we want to be able to flip headers in a received packet and send it back to the client. 
+Ixy is a network driver implemented in the userspace for Intel's Ixgbe family of network cards that shows how network cards work at the driver level. It is implemented in a fashion similar to DPDK and Snabb. We use a version of Ixy written in Rust and modify it to fit the design of our network stack. Two main limitations of Ixy (as per our design) are: (1) it handles allocations in the driver and (2) received packets cannot be reused as transmit packets. (2) is important as for a lot of applications (e.g. MICA), we want to be able to flip headers in a received packet and send it back to the client. 
 
-The major modifications we make to Ixy are:
+The major modifications we make to ixy.rs are:
 \begin{itemize}
-\item{Change the way packets are allocated. We get rid of the huge-pages backed Mempool and allow packets to be discretely allocated. DMA mapping is done for every packet. While this is wasteful in terms of memory (each packet takes a page), there is no discernible change in performance in processing packets. This also enables the NIC to interleave packets from different applications in the same queue without crossing any isolation boundaries. }
+    \item{Change the way packets are allocated. We get rid of the huge-pages backed Mempool and allow packets to be discretely allocated. DMA mapping is done for every packet. }
 \item{Receive queues do not allocate packets themselves. Instead, the application supplies a batch of allocated buffers which is used to read packets from the NIC. This relieves the NIC from having to do any allocations. }
+\end{itemize}
 
-On testing with an Ixgbe NIC with a line rate of 10GB/s, we see no drop in performance after our 
+On testing with an Ixgbe NIC with a line rate of 10GB/s, we see no drop in performance after our modifications.
 
-\section{Network Manager}
+\subsection{Packet Storage}
+As mentioned above, packets are stored in a DMA-mapped page-sized buffer. \ref{listing5} illustrates the Packet struct and how it is allocated. While allocating a page for each packet is wasteful in terms of memory, there is no discernible change in performance in processing packets. This also enables the NIC to interleave packets from different applications in the same queue without crossing any isolation boundaries.
 
-The network manager is a shared component that manages and allocates ports to the applications. The network manager keeps track of open ports and associates network stacks with a port. It also holds a queue of empty buffers for each allocated stack. When a stack is not actively receiving packets from the NIC, it can buffer packets in a separate queue to relieve the NIC from buffering packets. This is done with the help of packet flipping. 
+\begin{lstlisting}[language=C]
+#[repr(C, align(PAGESZ))]
+pub(crate) struct PacketBuffer {
+    data: [u8; PAGESZ]
+}
 
-\section{Packet Processing}
+pub struct Packet {
+    pub(crate) addr_virt: *mut u8,
+    pub(crate) addr_phys: usize,
+    pub(crate) len: usize,
+    pub(crate) data: Box<PacketBuffer>,
+}
 
-\subsection*{Batching}
+pub fn alloc_pkt(len: usize) -> Option<Packet> {
+    let mut buffer = Box::new(PacketBuffer{ data: [0;PAGESZ] });
+    let addr_virt = buffer.data.as_mut_ptr();
+    let mut p = Packet {
+        data: buffer,
+        addr_virt,
+        len,
+        addr_phys: 0,
+    };
+    match vfio_map_dma(p.addr_virt as usize, PAGESZ) {
+        Ok(addr_phys) => {
+            p.addr_phys = addr_phys;
+            Some(p)
+        }
+        Err(e) => {
+            error!("{}", e);
+
+            None
+        }
+    }
+}
+\end{lstlisting}
+
+
+\section{Port Manager}
+The PortManager handles all allocations and deallocations of ports and keeps track of which stacks they are bound to. To be able to formally verify its implementation in the future, the interface it exposes is minimal and it only interacts with the opaque identifiers rather than actual types. 
+
+\section{Demuxer}
+The demuxer matches incoming packets with a destination stack and and returns free buffers from the NIC to the stack that owns them. The demuxer can also maintains private queues for applications that are not actively receiving packets but have incoming packets destined to them. The next time the application calls receive, the private queue is emptied and the packets are returned to the stack. If the private queue for a stack is saturated, incoming packets are simply dropped.
 
 \subsection{Packet Flipping}
-When a stack receives a batch of packets by calling \lstinline{rx_batch}, it can go through the batch and read the protocol and destination port and match them against its own protocol and port. If the tuple doesn't match, it can pass the buffer to the packet manager which will ``flip" the packet buffer with a pre-allocated empty buffer from an appropriate queue. This way, stacks can "help" other stacks receive packets from the same NIC.
+Since the buffers for a receive call come from a stack, and since all packets received might not be destined to the same stack, the demuxer can flip a buffer from its private queue so that the application does not lose a free buffer to the demuxer. This is done by popping a buffer from a private queue and flipping it with the received buffer. The application can then get a free buffer in return for the buffer it contributed for the packet of another stack.
+
+
+\subsection{UDP Interface}
+we provide a low level interface for the application to interface applications with the udp protocol. We provide a \lstinline{udpstack} interface that exposes two main methods: \lstinline{tx_batch()} and \lstinline{rx_batch()} both of which interact with discrete packet buffers. note that this is currently a low level interface requiring the user to setup a static arp table and routes in the ipv4 table themeselves. this can be changed in the future when the stack is integrated with atmosphere. we also provide a convenience function called \lstinline{prepare_batch()} that lets users provide a buffer and fills discrete packets with all required headers and the data from the given buffer. For ease of manipulating packet headers, we provide a \lstinline{UDPPacketRepr} representation which has setters and getters for protocol headers.  
+
+
