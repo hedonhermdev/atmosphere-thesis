@@ -31,9 +31,55 @@ Passing data has a low overhead as it is as simple as passing the PAC alongwith 
 \section{ARM Memory Tagging Extensions}
 Similar to MPK, MTE allows memory regions to be tagged with one of 16 possible tags. However, MTE tags live in an inaccessible region of physical memory. MTE also allows for more fine- grained isolation as it works on 16 byte granules as compared to the page sized granularity in MPK. In our design, every domain can be assigned a tag. We use the ‘bfi‘ instruction to tag every pointer with it’s corresponding tag. To pass buffers between domains, the buffer has to be retagged with the tag of the new domain.
 
-The runtime overhead is low since the ‘bfi‘ instruction takes very few cycles to tag the pointer. The fine-grained granularity offered by MTE comes at a cost because retagging large buffers in memory is essentially tagging 16 (64 in the kernel) bytes in a loop.
+The runtime overhead is low since the \lstinline{bfi} instruction takes very few cycles to tag the pointer. The fine-grained granularity offered by MTE comes at a cost because retagging large buffers in memory is essentially tagging 16 (64 in the kernel) bytes in a loop.
 
 \section{Evaluating Isolation Mechanisms}
+\begin{figure}[!htbp]
+\includegraphics[width=1.0\columnwidth]{figures/ffmpeg-pipeline.pdf}
+\caption{Video Processing Pipeline}
+\label{fig:ffmpeg-pipeline}
+\end{figure}
+
 To evaluate the aforementioned isolation mechanisms, we implement a video processing pipeline with two steps: (1) Frame Extractor which decodes frames from a video buffer and (2) Thumbnail encoder which converts the extracted frames into a suitable pixel format and encodes them into a GIF. We implement this pipeline using FFmpeg libraries in C and apply 5 different isolation mechanisms: SSFI, NaCl, MPK, MTE, and PAC. ?? describes the experiment setup and ?? compares the performance of the setups as compared to an unisolated setup. 
 
+\begin{figure}[!htbp]
+	\includegraphics[width=1.0\columnwidth]{figures/ffmpeg-x86.pdf}
+\caption{Overhead of FFmpeg (x86)}
+	\label{fig:ffmpeg-x86}
+%\vspace{-5mm}
+\end{figure}
+
+\begin{figure}[!htbp]
+	\includegraphics[width=1.0\columnwidth]{figures/ffmpeg-arm.pdf}
+\caption{Overhead of FFmpeg (ARM)}
+	\label{fig:ffmpeg-arm}
+%\vspace{-5mm}
+\end{figure}
+
 With Intel MPK and ARM MTE, the extracted frames are retagged and passed between the compartments. However, with NaCl, they are copied to the second compartment, resulting in an extra overhead. MPK comes close to the performance of non-isolated C. SSFI schemes suffer from overheads of memory copying (NaCl on x86) and expensive retagging (MTE on ARM). 
+
+\tirth{add a sentence about why NaCl performs better on ARM than on x86}
+
+We also use PAPI to further breakdown the overheads of each isolation mechanism on x86 CPUs. 
+
+\begin{table}[!htbp]
+    \begin{small}
+    \begin{center}
+  \begin{tabular}{| l | c | c | c | c | c |}
+  \hline
+  (in Millions)    & C   & SSFI   & NaCl & MPK   \\
+  \hline
+  \hline
+  Cycles           & 5995 & 11578  & 10188 & 5996  \\
+  Instructions     & 14681  & 34797  & 25846 & 14681 \\
+  Branches         & 905   & 938   & 907  & 905   \\
+  Branches mispred.& 60   & 63    & 56   & 60    \\
+  loads            & 3267  & 3844  & 3448 & 3267  \\
+  stores           & 1415  & 1594   & 1493  & 1415   \\
+    \hline
+    \end{tabular}
+    \end{center}
+  \end{small}
+  \caption{Microarchitectural comparison of SFI and C on FFmpeg-x86 benchmark.}
+  \label{table:micro-ffmpeg-x86}
+\end{table}

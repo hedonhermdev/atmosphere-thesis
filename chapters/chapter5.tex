@@ -3,92 +3,20 @@
 \label{Chapter5}
 
 \lhead{Chapter 5. Evaluation} 
+To evaluate the performance of our network stack, we run experiments on the Cloudlab network testbed. We utilize two c220g2 servers  configured with two Intel E5-2660 v3 10-core Haswell CPUs, 160 GB RAM, and a dual-port Intel X520 10Gb NIC. We disable hyperthreading and set the CPUs to a constant frequency of 2.6GHz to reduce the variance in benchmarking. 
 
-\section{Network stack design and benchmark}
-
-\begin{figure}[!htbp]
-	\includegraphics[width=1.0\columnwidth]{figures/network-design.pdf}
-\caption{Atmosphere network stack design\}
-	\label{fig:network-design}
-%\vspace{-5mm}
-\end{figure}
+\section{L2 Forward}
+We use DPDK's L2Forward example and benchmark it against a similar implementation in Rust. We vary the packet size from 100-1500 in steps of 100 with a batch size of 32 for both the implementations and sent packets at a rate of 10Gb/s (the line rate of the NIC). Since the CPU can easy saturate a 10Gb/s line while running at 2.6GHz, we also compare the performance at a frequency of 1GHz. 
 
 \begin{figure}[!htbp]
 	\includegraphics[width=1.0\columnwidth]{figures/l2fwd26.pdf}
-\caption{Comparison of Throughput @2.6GHZ}
+\caption{L2Forward throughput measured at 2.6GHz}
 	\label{fig:l2fwd26}
-%\vspace{-5mm}
 \end{figure}
 
-\section{FFmpeg experiment design and benchmark}
+\tirth{Add 1GHz benchmark for Ixy}
 
-\begin{figure}[!htbp]
-	\includegraphics[width=1.0\columnwidth]{figures/ffmpeg-pinpeline.pdf}
-\caption{Overhead of FFmpeg (ARM)}
-	\label{fig:ffmpeg-arm}
-%\vspace{-5mm}
-\end{figure}
+\section{Key-Value Store}
+To study the overheads of our network stack on a realistic workload, we implement an in-memory key-value store backed by a hash-table based on the Fowler-Noll-Vo algorithm. Processing a packet consists of parsing the request, performing an insert/fetch operation in the hash table, filling the response buffer queuing the packet in the send batch. Transmitting a packet takes fewer cycles than receiving because calls to \lstinline{rx_batch} wait till the NIC is done writing packets into the DMA buffers while \lstinline{tx_batch} simply holds the DMA buffers in a private queue and the NIC can write to them asynchronously. The next time \lstinline{tx_batch} is called, the queue is cleaned and the buffers are returned as ``free buffers".
 
-\begin{figure}[!htbp]
-	\includegraphics[width=1.0\columnwidth]{figures/ffmpeg-arm.pdf}
-\caption{Overhead of FFmpeg (ARM)}
-	\label{fig:ffmpeg-arm}
-%\vspace{-5mm}
-\end{figure}
-
-\begin{figure}[!htbp]
-	\includegraphics[width=1.0\columnwidth]{figures/ffmpeg-x86.pdf}
-\caption{Overhead of FFmpeg (x86)}
-	\label{fig:ffmpeg-x86}
-%\vspace{-5mm}
-\end{figure}
-
-\section{Microarchitectural comparison}
-
-\begin{table}[!htbp]
-    \begin{small}
-    \begin{center}
-  \begin{tabular}{| l | c | c | c | c | c |}
-  \hline
-  (in Millions)    & C   & SSFI   & NaCl & MPK   \\
-  \hline
-  \hline
-  Cycles           & 5995 & 11578  & 10188 & 5996  \\
-  Instructions     & 14681  & 34797  & 25846 & 14681 \\
-  Branches         & 905   & 938   & 907  & 905   \\
-  Branches mispred & 60   & 63    & 56   & 60    \\
-  loads            & 3267  & 3844  & 3448 & 3267  \\
-  stores           & 1415  & 1594   & 1493  & 1415   \\
-  \hline
-  \end{tabular}
-  \end{center}
-\end{small}
-  \caption{Microarchitectural comparison of SFI and C on FFmpeg-x86 benchmark.}
-  \label{table:micro-ffmpeg-x86}
-  \end{table}
-
-
-%tirth here if you want to disable arm numbers
-%\iffalse
-\begin{table}[!htbp]
-    \begin{small}
-    \begin{center}
-  \begin{tabular}{| l | c | c | c | c | c |}
-  \hline
-  (in Millions)    & C   & MTE   & NaCl & PAC   \\
-  \hline
-  \hline
-  Cycles           & 2253 & 2712  & 2673 & 4689  \\
-  Instructions     & 7487  & 7487  & 7327 & 14180 \\
-  Branches         & 407   & 427   & 419  & 426   \\
-  Branches mispred & 104   & 22    & 22   & 21    \\
-  loads            & 1489  & 1504  & 1465 & 3288  \\
-  stores           & 619  & 618   & 610  & 811   \\
-  \hline
-  \end{tabular}
-  \end{center}
-\end{small}
-  \caption{Microarchitectural comparison of SFI and C on FFmpeg-AArch64 benchmark.}
-  \label{table:micro-ffmpeg-arm}
-  \end{table}
-%\fi
+\tirth{Add key-value store table}

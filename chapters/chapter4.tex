@@ -6,6 +6,12 @@
 
 In this chapter, we take a look at how we implemented the UDP stack for Atmosphere. Since Atmosphere is not ready yet, we build a standalone network stack that runs in the userspace and evaluate its performance. We use a custom userspace network driver (based on Ixy) to process raw ethernet frames sent to and from the network stack. This driver is shared across applications just as it would be in the real Atmosphere.
 
+\begin{figure}[!htbp]
+	\includegraphics[width=1.0\columnwidth]{figures/network-design.pdf}
+\caption{Atmosphere network stack design}
+	\label{fig:network-design}
+\end{figure}
+
 \section{Driver for the Network Card}
 
 Ixy is a network driver implemented in the userspace for Intel's Ixgbe family of network cards that shows how network cards work at the driver level. It is implemented in a fashion similar to DPDK and Snabb. We use a version of Ixy written in Rust and modify it to fit the design of our network stack. Two main limitations of Ixy (as per our design) are: (1) it handles allocations in the driver and (2) received packets cannot be reused as transmit packets. (2) is important as for a lot of applications (e.g. MICA), we want to be able to flip headers in a received packet and send it back to the client. 
@@ -77,7 +83,7 @@ Since the buffers for a receive call come from a stack, and since all packets re
 \subsection{UDP Interface}
 We provide a low level interface for the application to interface applications with the udp protocol. We provide a \lstinline{UdpStack} interface that exposes two main methods: \lstinline{tx_batch()} and \lstinline{rx_batch()} both of which are non-blocking and interact with discrete packet buffers. Note that this is currently a low level interface requiring the user to setup a static arp table and routes in the ipv4 table themeselves. this can be changed in the future when the stack is integrated with atmosphere. We also provide a convenience function called \lstinline{prepare_batch()} that lets users provide a buffer and fills discrete packets with all required headers and the data from the given buffer. For ease of manipulating packet headers, we provide a \lstinline{UDPPacketRepr} representation which has setters and getters for protocol headers. \ref{listing:2} illustrates the code for a simple UDP echo server.
 
-\begin{listing}[!ht]
+\begin{listing}[!htb]
 \begin{minted}[fontsize=\footnotesize, frame=lines, framesep=2mm]{Rust}
 pub fn main() {
     let mut stack = create_udp_stack(Ipv4Address::new(10, 0, 0, 2), 5000);
