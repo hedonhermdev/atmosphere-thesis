@@ -37,3 +37,17 @@ The runtime overhead is low since the ‘bfi‘ instruction takes very few cycle
 To evaluate the aforementioned isolation mechanisms, we implement a video processing pipeline with two steps: (1) Frame Extractor which decodes frames from a video buffer and (2) Thumbnail encoder which converts the extracted frames into a suitable pixel format and encodes them into a GIF. We implement this pipeline using FFmpeg libraries in C and apply 5 different isolation mechanisms: SSFI, NaCl, MPK, MTE, and PAC. ?? describes the experiment setup and ?? compares the performance of the setups as compared to an unisolated setup. 
 
 With Intel MPK and ARM MTE, the extracted frames are retagged and passed between the compartments. However, with NaCl, they are copied to the second compartment, resulting in an extra overhead. MPK comes close to the performance of non-isolated C. SSFI schemes suffer from overheads of memory copying (NaCl on x86) and expensive retagging (MTE on ARM). 
+
+\begin{figure}[H]
+	\includegraphics[width=1.0\columnwidth]{figures/ffmpeg-arm.pdf}
+\caption{Overhead of FFmpeg (ARM)}
+	\label{fig:ffmpeg-arm}
+%\vspace{-5mm}
+\end{figure}
+
+\begin{figure}[H]
+	\includegraphics[width=1.0\columnwidth]{figures/ffmpeg-x86.pdf}
+\caption{Overhead of FFmpeg (x86)}
+	\label{fig:ffmpeg-x86}
+%\vspace{-5mm}
+\end{figure}
