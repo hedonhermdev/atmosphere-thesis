@@ -11,13 +11,13 @@ SOURCES=$(THESIS) Makefile
 all: 	$(MAIN).pdf
 
 cont: FORCE
-	$(LATEXMK) -f -pdf -pvc $(LATEXOPT) $(THESIS)
+	$(LATEXMK) -f -shell-escape -pdf -pvc $(LATEXOPT) $(THESIS)
 
 $(thesis): FORCE
-	latexmk -pdf -f $(thesis)
+	latexmk -pdf -f -shell-escape $(thesis)
 
 $(MAIN).pdf: .refresh $(SOURCES)
-	$(LATEXMK) -f -pdf $(LATEXOPT) $(THESIS)
+	$(LATEXMK) -f -pdf -shell-escape $(LATEXOPT) $(THESIS)
 
 clean:
 	$(LATEXMK) -c $(MAIN).tex
