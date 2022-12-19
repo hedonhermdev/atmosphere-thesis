@@ -3,8 +3,7 @@
 \label{Chapter3}
 
 \lhead{Chapter 3. \emph{Isolation Mechanisms}} 
-
-\tirth{ Some intro here }
+In this chapter, we take a detour from operating systems to discuss currently available primitives for isolation. Traditionally, isolation has been done in the hardware using page-tables and virtual memory. However, page-tables only support coarse-grained isolation. Software based approaches allow for fine-grained isolation but they generally incur a high runtime overhead. The use of garbage-collected langauges, while providing memory safety, suffers from the high GC overhead. 
 
 \section{Memory Protection Keys}
 
@@ -81,3 +80,7 @@ We also use PAPI to further breakdown the overheads of each isolation mechanism 
   \caption{Microarchitectural comparison of SFI and C on FFmpeg-x86 benchmark.}
   \label{table:micro-ffmpeg-x86}
 \end{table}
+
+\section{Rust}
+Rust is a new programming language aimed at providing memory safety while being free of a garbage-collector. The primitives of ``ownership" and ``lifetimes" in Rust boil down to zero cost at the runtime and the runtime overhead is limited to bounds checking. With the help of the borrow-checker, the lifetime of an object can be statically tracked and thus object deallocation can be handled statically. According to Rust's ownerhsip model, every piece of data can be owned only by a single variable. It can either pass the ownership or copy the data.
+Inspite of it's benefits in isolation, most applications use Rust as a drop-in replacement for C. We argue that the true benefits of Rust lie in the fine-grained fault isolation with the use of language-safety features. We use Rust to implement Atmosphere and rely on it's memory safety guarantees for isolation between domains.
