@@ -56,9 +56,7 @@ To evaluate the aforementioned isolation mechanisms, we implement a video proces
 %\vspace{-5mm}
 \end{figure}
 
-With Intel MPK and ARM MTE, the extracted frames are retagged and passed between the compartments. However, with NaCl, they are copied to the second compartment, resulting in an extra overhead. MPK comes close to the performance of non-isolated C. SSFI schemes suffer from overheads of memory copying (NaCl on x86) and expensive retagging (MTE on ARM). 
-
-\tirth{add a sentence about why NaCl performs better on ARM than on x86}
+With Intel MPK and ARM MTE, the extracted frames are retagged and passed between the compartments. However, with NaCl, they are copied to the second compartment, resulting in an extra overhead. MPK comes close to the performance of non-isolated C. SSFI schemes suffer from overheads of memory copying (NaCl on x86) and expensive retagging (MTE on ARM). NaCl performs better on ARM than on x86 CPUs as ARM supports the `bfi` which can mask the upper bits and inject the segment into the register in a single instruction.
 
 We also use PAPI to further breakdown the overheads of each isolation mechanism on x86 CPUs. 
 
