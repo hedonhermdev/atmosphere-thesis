@@ -14,9 +14,34 @@ We use DPDK's L2Forward example and benchmark it against a similar implementatio
 	\label{fig:l2fwd26}
 \end{figure}
 
-\tirth{Add 1GHz benchmark for Ixy}
+\begin{figure}[!htbp]
+	\includegraphics[width=1.0\columnwidth]{figures/l2fwd26@1ghz.pdf}
+\caption{L2Forward throughput measured at 1GHz}
+	\label{fig:l2fwd26}
+\end{figure}
 
 \section{Key-Value Store}
 To study the overheads of our network stack on a realistic workload, we implement an in-memory key-value store backed by a hash-table based on the Fowler-Noll-Vo algorithm. Processing a packet consists of parsing the request, performing an insert/fetch operation in the hash table, filling the response buffer queuing the packet in the send batch. Transmitting a packet takes fewer cycles than receiving because calls to \lstinline{rx_batch} wait till the NIC is done writing packets into the DMA buffers while \lstinline{tx_batch} simply holds the DMA buffers in a private queue and the NIC can write to them asynchronously. The next time \lstinline{tx_batch} is called, the queue is cleaned and the buffers are returned as ``free buffers".
 
-\tirth{Add key-value store table}
+\begin{table}[!htbp]
+    \begin{small}
+    \begin{center}
+  \begin{tabular}{| c | c | c | c | c | c |}
+  \hline
+  capacity (power of 2)   & operations (power of 2)   & rx\textunderscore tsc\textbackslash pkt  &  process\textunderscore tsc\textbackslash pkt    & tx\textunderscore tsc\textbackslash pkt    \\
+  \hline
+  \hline
+  16 & 14 & 763 & 911 & 354 \\
+  18 & 16 & 807 & 813 & 363 \\
+  20 & 18 & 811 & 809 & 363 \\
+  22 & 20 & 813 & 805 & 364 \\
+  24 & 22 & 814 & 804 & 364 \\
+  26 & 24 & 814 & 804 & 364 \\
+  28 & 26 & 813 & 805 & 364 \\
+  \hline
+\end{tabular}
+\end{center}
+\end{small}
+\caption{Microarchitectural comparison of SFI and C on FFmpeg-x86 benchmark.}
+\label{table:micro-ffmpeg-x86}
+\end{table}

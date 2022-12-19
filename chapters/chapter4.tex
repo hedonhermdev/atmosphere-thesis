@@ -27,7 +27,7 @@ On testing with an Ixgbe NIC with a line rate of 10GB/s, we see no drop in perfo
 \subsection{Packet Storage}
 As mentioned above, packets are stored in a DMA-mapped page-sized buffer. Listing \ref{listing:1} illustrates the Packet struct and how it is allocated. While allocating a page for each packet is wasteful in terms of memory, there is no discernible change in performance in processing packets. This also enables the NIC to interleave packets from different applications in the same queue without crossing any isolation boundaries.
 
-\begin{listing}[!ht]
+\begin{listing}[!htbp]
 \begin{minted}[fontsize=\footnotesize, frame=lines, framesep=2mm]{Rust}
 #[repr(C, align(PAGESZ))]
 pub(crate) struct PacketBuffer {
