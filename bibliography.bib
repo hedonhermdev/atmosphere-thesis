@@ -35,3 +35,104 @@ series = {EuroSys '17}
     school = {Technical University of Munich}
     url = {https://www.net.in.tum.de/fileadmin/bibtex/publications/theses/2018-ixy-rust.pdf}
 }
+
+@article{singularity,
+author = {Hunt, Galen and Larus, Jim},
+title = {Singularity: Rethinking the Software Stack},
+year = {2007},
+month = {April},
+abstract = {Every operating system embodies a collection of design decisions. Many of the decisions behind today’s most popular operating systems have remained unchanged, even as hardware and software have evolved. Operating systems form the foundation of almost every software stack, so inadequacies in present systems have a pervasive impact. This paper describes the efforts of the Singularity project to re-examine these design choices in light of advances in programming languages and verification tools. Singularity systems incorporate three key architectural features: software-isolated processes for protection of programs and system services, contract-based channels for communication, and manifest-based programs for verification of system properties. We describe this foundation in detail and sketch the ongoing research in experimental systems that build upon it.},
+publisher = {Association for Computing Machinery, Inc.},
+url = {https://www.microsoft.com/en-us/research/publication/singularity-rethinking-the-software-stack/},
+pages = {37-49},
+journal = {ACM SIGOPS Operating Systems Review},
+volume = {41},
+number = {2},
+}
+
+@inproceedings{redleaf,
+  title={$\{$RedLeaf$\}$: Isolation and Communication in a Safe Operating System},
+  author={Narayanan, Vikram and Huang, Tianjiao and Detweiler, David and Appel, Dan and Li, Zhaofeng and Zellweger, Gerd and Burtsev, Anton},
+  booktitle={14th USENIX Symposium on Operating Systems Design and Implementation (OSDI 20)},
+  pages={21--39},
+  year={2020}
+}
+
+@inproceedings{nacl,
+title	= {Native Client: A Sandbox for Portable, Untrusted x86 Native Code},
+author	= {Bennet Yee and David Sehr and Greg Dardyk and Brad Chen and Robert Muth and Tavis Ormandy and Shiki Okasaka and Neha Narula and Nicholas Fullagar},
+year	= {2009},
+URL	= {http://nativeclient.googlecode.com/svn/data/docs_tarball/nacl/googleclient/native_client/documentation/nacl_paper.pdf},
+booktitle	= {IEEE Symposium on Security and Privacy (Oakland'09)},
+address	= {IEEE, 3 Park Avenue, 17th Floor, New York, NY 10016}
+}
+
+@inproceedings{mpk,
+  title={libmpk: Software abstraction for intel memory protection keys (intel $\{$MPK$\}$)},
+  author={Park, Soyeon and Lee, Sangho and Xu, Wen and Moon, Hyungon and Kim, Taesoo},
+  booktitle={2019 USENIX Annual Technical Conference (USENIX ATC 19)},
+  pages={241--254},
+  year={2019}
+}
+
+@inproceedings{lxfi, author = {Mao, Yandong and Chen, Haogang and Zhou, Dong and Wang, Xi and Zeldovich, Nickolai and Kaashoek, M. Frans}, title = {Software Fault Isolation with API Integrity and Multi-Principal Modules}, year = {2011}, isbn = {9781450309776}, publisher = {Association for Computing Machinery}, address = {New York, NY, USA}, url = {https://doi.org/10.1145/2043556.2043568}, doi = {10.1145/2043556.2043568}, abstract = {The security of many applications relies on the kernel being secure, but history suggests that kernel vulnerabilities are routinely discovered and exploited. In particular, exploitable vulnerabilities in kernel modules are common. This paper proposes LXFI, a system which isolates kernel modules from the core kernel so that vulnerabilities in kernel modules cannot lead to a privilege escalation attack. To safely give kernel modules access to complex kernel APIs, LXFI introduces the notion of API integrity, which captures the set of contracts assumed by an interface. To partition the privileges within a shared module, LXFI introduces module principals. Programmers specify principals and API integrity rules through capabilities and annotations. Using a compiler plugin, LXFI instruments the generated code to grant, check, and transfer capabilities between modules, according to the programmer's annotations. An evaluation with Linux shows that the annotations required on kernel functions to support a new module are moderate, and that LXFI is able to prevent three known privilege-escalation vulnerabilities. Stress tests of a network driver module also show that isolating this module using LXFI does not hurt TCP throughput but reduces UDP throughput by 35%, and increases CPU utilization by 2.2-3.7x.}, booktitle = {Proceedings of the Twenty-Third ACM Symposium on Operating Systems Principles}, pages = {115–128}, numpages = {14}, location = {Cascais, Portugal}, series = {SOSP '11} }
+ 
+@inproceedings{rust, 
+  title={The rust language}, 
+  author={Matsakis, Nicholas D and Klock II, Felix S}, 
+  booktitle={ACM SIGAda Ada Letters}, 
+  volume={34}, 
+  number={3}, 
+  pages={103--104}, 
+  year={2014}, 
+  organization={ACM} 
+}
+@inproceedings{pacmem,
+author = {Li, Yuan and Tan, Wende and Lv, Zhizheng and Yang, Songtao and Payer, Mathias and Liu, Ying and Zhang, Chao},
+title = {PACMem: Enforcing Spatial and Temporal Memory Safety via ARM Pointer Authentication},
+year = {2022},
+isbn = {9781450394505},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3548606.3560598},
+doi = {10.1145/3548606.3560598},
+abstract = {Memory safety is a key security property that stops memory corruption vulnerabilities. Different types of memory safety enforcement solutions have been proposed and adopted by sanitizers or mitigations to catch and stop such bugs, at the development or deployment phase. However, existing solutions either provide partial memory safety or have overwhelmingly high performance overheads.In this paper, we present a novel sanitizer PACMem to efficiently catch spatial and temporal memory safety bugs. PACMem removes the majority of the overheads by sealing metadata in pointers through the COTS hardware feature -- ARM PA (Pointer Authentication) and saving the overhead of pointer metadata tracking. We have developed a prototype of PACMem and systematically evaluated its security and performance on the Magma, Juliet, Nginx, and SPEC CPU2017 test suites. In our evaluation, PACMem shows no false positives together with negligible false negatives, while introducing stronger bug detection capabilities and lower performance overheads than state-of-the-art sanitizers, including HWASan, ASan, SoftBound+CETS, Memcheck, LowFat, and PTAuth. Compared to the widely deployed ASan, PACMem has no false positives and much fewer false negatives and reduces the runtime overheads by 15.80\% and the memory overheads by 71.58\%.},
+booktitle = {Proceedings of the 2022 ACM SIGSAC Conference on Computer and Communications Security},
+pages = {1901–1915},
+numpages = {15},
+keywords = {spatial memory safety, temporal memory safety, sanitizer},
+location = {Los Angeles, CA, USA},
+series = {CCS '22}
+}
+@inproceedings{mpk-cycles, author = {Hedayati, Mohammad and Gravani, Spyridoula and Johnson, Ethan and Criswell, John and Scott, Michael L. and Shen, Kai and Marty, Mike}, title = {Hodor: Intra-Process Isolation for High-Throughput Data Plane Libraries}, year = {2019}, isbn = {9781939133038}, publisher = {USENIX Association}, address = {USA}, abstract = {As network, I/O, accelerator, and NVM devices capable of a million operations per second make their way into data centers, the software stack managing such devices has been shifting from implementations within the operating system kernel to more specialized kernel-bypass approaches. While the in-kernel approach guarantees safety and provides resource multiplexing, it imposes too much overhead on microsecond-scale tasks. Kernel-bypass approaches improve throughput substantially but sacrifice safety and complicate resource management: if applications are mutually distrusting, then either each application must have exclusive access to its own device or else the device itself must implement resource management.This paper shows how to attain both safety and performance via intra-process isolation for data plane libraries. We propose protected libraries as a new OS abstraction which provides separate user-level protection domains for different services (e.g., network and in-memory database), with performance approaching that of unprotected kernel bypass. We also show how this new feature can be utilized to enable sharing of data plane libraries across distrusting applications. Our proposed solution uses Intel's memory protection keys (PKU) in a safe way to change the permissions associated with subsets of a single address space. In addition, it uses hardware watch-points to delay asynchronous event delivery and to guarantee independent failure of applications sharing a protected library.We show that our approach can efficiently protect high-throughput in-memory databases and user-space network stacks. Our implementation allows up to 2.3 million library entrances per second per core, outperforming both kernellevel protection and two alternative implementations that use system calls and Intel's VMFUNC switching of user-level address spaces, respectively.}, booktitle = {Proceedings of the 2019 USENIX Conference on Usenix Annual Technical Conference}, pages = {489–503}, numpages = {15}, location = {Renton, WA, USA}, series = {USENIX ATC '19} }
+
+@inproceedings{rust-isolation, author = {Burtsev, Anton and Appel, Dan and Detweiler, David and Huang, Tianjiao and Li, Zhaofeng and Narayanan, Vikram and Zellweger, Gerd}, title = {Isolation in Rust: What is Missing?}, year = {2021}, isbn = {9781450387071}, publisher = {Association for Computing Machinery}, address = {New York, NY, USA}, url = {https://doi.org/10.1145/3477113.3487272}, doi = {10.1145/3477113.3487272}, abstract = {Rust is the first practical programming language that has the potential to provide fine-grained isolation of untrusted computations at the language level. A combination of zero-overhead safety, i.e., safety without a managed runtime and garbage collection, and a unique ownership discipline enable isolation in systems with tight performance budgets, e.g., databases, network processing frameworks, browsers, and even operating system kernels.Unfortunately, Rust was not designed with isolation in mind. Today, implementing isolation in Rust is possible but requires complex, ad hoc, and arguably error-prone mechanisms to enforce it outside of the language. We examine several recent systems that implement isolation in Rust but struggle with the shortcomings of the language. As a result of our analysis we identify a collection of mechanisms that can enable isolation as a first class citizen in the Rust ecosystem and suggest directions for implementing them.}, booktitle = {Proceedings of the 11th Workshop on Programming Languages and Operating Systems}, pages = {76–83}, numpages = {8}, location = {Virtual Event, Germany}, series = {PLOS '21} }
+ 
+@inproceedings{papi,
+  title={Collecting Performance Data with PAPI-C},
+  author={Terpstra, Dave and Jagode, Helge and You, Haohuan and Dongarra, Jack},
+  booktitle={Tools for High Performance Computing 2009},
+  pages={157--173},
+  year={2010},
+  publisher={Springer Berlin / Heidelberg},
+  address={Dresden, Germany},
+  series={3rd Parallel Tools Workshop}
+}
+
+@misc{dpdk,
+   title={Data Plane Development Kit ({DPDK})},
+   author={Linux Foundation},
+   year={2015},
+   url = {http://www.dpdk.org}
+}
+
+
+@inproceedings{cloudlab,
+    title     = "The Design and Operation of {CloudLab}",
+    author    = "Dmitry Duplyakin and Robert Ricci and Aleksander Maricq and Gary Wong and Jonathon Duerig and Eric Eide and Leigh Stoller and Mike Hibler and David Johnson and Kirk Webb and Aditya Akella and Kuangching Wang and Glenn Ricart and Larry Landweber and Chip Elliott and Michael Zink and Emmanuel Cecchet and Snigdhaswin Kar and Prabodh Mishra",
+    booktitle = "Proceedings of the {USENIX} Annual Technical Conference (ATC)",
+    pages     = "1--14",
+    year      = 2019,
+    month     = jul,
+    url       = "https://www.flux.utah.edu/paper/duplyakin-atc19"
+}
