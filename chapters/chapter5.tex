@@ -3,10 +3,10 @@
 \label{Chapter5}
 
 \lhead{Chapter 5. Evaluation} 
-To evaluate the performance of our network stack, we run experiments on the Cloudlab network testbed. We utilize two c220g2 servers  configured with two Intel E5-2660 v3 10-core Haswell CPUs, 160 GB RAM, and a dual-port Intel X520 10Gb NIC. We disable hyperthreading and set the CPUs to a constant frequency of 2.6GHz to reduce the variance in benchmarking. 
+To evaluate the performance of our network stack, we run experiments on the Cloudlab\cite{cloudlab} network testbed. We utilize two c220g2 servers  configured with two Intel E5-2660 v3 10-core Haswell CPUs, 160 GB RAM, and a dual-port Intel X520 10Gb NIC. We disable hyperthreading and set the CPUs to a constant frequency of 2.6GHz to reduce the variance in benchmarking. 
 
 \section{L2 Forward}
-We use DPDK's L2Forward example and benchmark it against a similar implementation in Rust. We vary the packet size from 100-1500 in steps of 100 with a batch size of 32 for both the implementations and sent packets at a rate of 10Gb/s (the line rate of the NIC). Since the CPU can easy saturate a 10Gb/s line while running at 2.6GHz, we also compare the performance at a frequency of 1GHz. 
+We use DPDK's L2Forward\cite{dpdk} example and benchmark it against a similar implementation in Rust. We vary the packet size from 100-1500 in steps of 100 with a batch size of 32 for both the implementations and sent packets at a rate of 10Gb/s (the line rate of the NIC). Since the CPU can easy saturate a 10Gb/s line while running at 2.6GHz, we also compare the performance at a frequency of 1GHz. 
 
 \begin{figure}[!htbp]
 	\includegraphics[width=1.0\columnwidth]{figures/l2fwd26.pdf}
@@ -17,7 +17,7 @@ We use DPDK's L2Forward example and benchmark it against a similar implementatio
 \begin{figure}[!htbp]
 	\includegraphics[width=1.0\columnwidth]{figures/l2fwd26@1ghz.pdf}
 \caption{L2Forward throughput measured at 1GHz}
-	\label{fig:l2fwd26}
+	\label{fig:l2fwd1}
 \end{figure}
 
 \section{Key-Value Store}
@@ -42,6 +42,6 @@ To study the overheads of our network stack on a realistic workload, we implemen
 \end{tabular}
 \end{center}
 \end{small}
-\caption{Microarchitectural comparison of SFI and C on FFmpeg-x86 benchmark.}
-\label{table:micro-ffmpeg-x86}
+\caption{Breakdown of cycles taken to process a request}
+    \label{table:kv-store}
 \end{table}
